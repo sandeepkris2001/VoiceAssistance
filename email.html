@@ -1,0 +1,143 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  <title>Email</title>
+<style>
+    body{
+        background-color:black;color:white   
+      }
+      
+    .speech i{
+      float: right;
+      width: 50%;
+      height: 10%;
+    }
+  .speech input {border: 0; width: 240px;  height: 40px;}
+  .speech img { width: 40px }
+  .bi{
+    font-size: larger;
+    cursor: pointer;  
+  }
+  .btn{
+    width: 10%;
+  }
+  
+</style>
+</head>
+    <body>
+ <div style="padding-left:450px; padding-top:6%">
+<form name="myform" method="post" action="javascript:sendEmail()" class="speech">
+  
+        <div class="form-group">
+    <label for="name">Name:</label>
+    <input type="text" class="form-control" style="width:50%" id="name" placeholder="Enter Name" onclick="readOut('Enter your name')">
+    <i class="bi bi-mic-fill" onclick="startDictation('name');"></i>
+
+  </div>
+    <div class="form-group">
+    <label for="email">Email-Id:</label>
+    <input type="email" class="form-control" style="width:50%" id="email" placeholder="Enter Email-Id" onclick="readOut('Enter your email id')">
+    <i class="bi bi-mic-fill" onclick="startDictation('email')"></i>
+  </div>
+        <div class="form-group">
+    <label for="subject">Subject:</label>
+    <input type="text" class="form-control" id="subject" style="width:50%" placeholder="Enter subject" onclick="readOut('Enter your subject')">
+    <i class="bi bi-mic-fill" onclick="startDictation('subject')"></i>
+  </div>
+        
+        <div class="form-group">
+    <label for="message">Message:</label>
+    <textarea class="form-control" id="message" style="width:50%" rows="3" onclick="readOut('Enter your message')"></textarea>
+    <i class="bi bi-mic-fill" onclick="startDictation('message')"></i>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Send</button>
+  <i class="bi bi-mic-fill" onclick="readOut('Click this send button inorder to send the message')"></i>
+
+</form>
+</div>
+<script src="https://smtpjs.com/v3/smtp.js"></script>
+
+<script>
+    readOut("Now you are in email page")
+
+
+  const lang = navigator.language;
+
+  if(localStorage.getItem("lang") === null){
+  localStorage.setItem("lang", "en-US")
+  }
+  readOut('Welcome to the email page, Kindly spell out the name, receipient email, subject and message');
+
+  function startDictation(x) {
+
+ if (window.hasOwnProperty('webkitSpeechRecognition')) {
+
+   var recognition = new webkitSpeechRecognition();
+
+   recognition.continuous = false;
+   recognition.interimResults = false;
+
+   recognition.lang = "en-US";
+   recognition.start();
+   recognition.onresult = function(e) {
+       if(x=="message"){
+             document.getElementById(x).value = e.results[0][0].transcript.slice(0,-1);
+             recognition.stop();
+       }
+       else{ 
+           document.getElementById(x).value= e.results[0][0].transcript.slice(0,-1);
+     recognition.stop();
+       }
+    };
+
+
+ }
+
+
+}
+
+
+function sendEmail(){
+  const name = document.getElementById("name").value;
+const email = document.getElementById("email").value;
+const subject = document.getElementById("subject").value;
+const message = document.getElementById("message").value;
+  console.log(name,email,subject,message)
+Email.send({
+ Host : "smtp.gmail.com",
+ Username : "san.exxe12@gmail.com",
+ Password : "S@a012345678910",
+ To : email,
+ From : "san.exxe12@gmail.com",
+ Subject : subject+" from "+name,
+ Body : message
+}).then(
+message => {
+if(message=='OK'){
+ readOut('Your mail has been sent successfully');
+ readOut("if u want to send again, go back to main page and spell about sending email")
+}
+else{
+ console.error (message);
+ readOut('Sorry your mail not sent. Try again later')
+}
+}
+);
+}
+function readOut(message) {
+const speech = new SpeechSynthesisUtterance();
+speech.text = message;
+speech.volume = 1;
+speech.pitch=1;
+speech.lang= "en-US"
+speech.voice = window.speechSynthesis.getVoices()[37];
+window.speechSynthesis.speak(speech);
+console.log("Speaking out");  
+
+}
+ </script>
+</body>
+
+</html>
